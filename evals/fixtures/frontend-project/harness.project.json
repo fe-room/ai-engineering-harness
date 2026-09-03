@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "project": { "name": "frontend-fixture" },
+  "knowledge": { "entrypoint": "AGENTS.md", "documents": [] },
+  "commands": { "verify": ["pnpm check"] },
+  "skills": ["plan-change", "diagnose-problem", "implement-change", "review-change", "verify-deliverable"],
+  "adapters": { "skillDirectories": [".agents/skills", ".claude/skills", ".github/skills"] },
+  "policies": { "approvalRequired": ["install-dependencies", "commit", "push", "deploy", "external-write"] }
+}

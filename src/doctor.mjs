@@ -4,7 +4,7 @@ import { CONFIG_FILENAME, readProjectConfig } from './config.mjs'
 
 const LOCKFILES = ['pnpm-lock.yaml', 'package-lock.json', 'yarn.lock', 'bun.lock', 'bun.lockb']
 
-export function inspectProject(projectDirectory) {
+export function inspectProject(projectDirectory, options = {}) {
   const checks = []
   const nodeMajor = Number.parseInt(process.versions.node.split('.')[0], 10)
   checks.push({
@@ -44,6 +44,38 @@ export function inspectProject(projectDirectory) {
       })
     } else {
       checks.push({ level: 'warning', message: 'No knowledge.entrypoint is configured.' })
+    }
+    for (const document of config.knowledge?.documents || []) {
+      const documentExists = existsSync(resolve(projectDirectory, document))
+      checks.push({
+        level: documentExists ? 'pass' : 'error',
+        message: documentExists
+          ? `Knowledge document found: ${document}`
+          : `Knowledge document is missing: ${document}`,
+      })
+    }
+    if (config.commands.verify.length === 0) {
+      checks.push({ level: 'warning', message: 'No verification commands are configured.' })
+    } else {
+      checks.push({ level: 'pass', message: `${config.commands.verify.length} verification command(s) configured` })
+    }
+
+    for (const skill of config.skills) {
+      if (options.harnessDirectory && !existsSync(resolve(options.harnessDirectory, 'skills', skill, 'SKILL.md'))) {
+        checks.push({ level: 'error', message: `Configured Harness skill is unavailable: ${skill}` })
+      }
+    }
+    for (const directory of config.adapters.skillDirectories) {
+      const missing = config.skills.filter(
+        (skill) => !existsSync(resolve(projectDirectory, directory, skill, 'SKILL.md')),
+      )
+      checks.push({
+        level: missing.length === 0 ? 'pass' : 'warning',
+        message:
+          missing.length === 0
+            ? `All configured skills are available in ${directory}`
+            : `${directory} is missing ${missing.length} configured skill(s); run \`harness sync\`.`,
+      })
     }
   } catch (error) {
     checks.push({ level: 'error', message: error.message })

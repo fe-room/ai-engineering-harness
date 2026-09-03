@@ -15,4 +15,6 @@ Produce a plan that states:
 - verification for each material risk;
 - decisions that require human input.
 
+When the project uses the AI Engineering Harness task protocol, keep the plan compatible with its objective, context, acceptance criteria, non-goals, constraints, deliverables, verification, and risk fields.
+
 Do not modify implementation files while planning unless the user explicitly asks for both planning and execution. Ask only when a missing decision would materially change the result; otherwise state a bounded assumption.

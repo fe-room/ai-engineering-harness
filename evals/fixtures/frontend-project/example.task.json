@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "objective": "Prevent duplicate form submission while an employee create request is pending.",
+  "context": ["The submit action currently remains enabled during the request."],
+  "acceptanceCriteria": ["The submit action is disabled while the request is pending.", "A regression test covers repeated activation."],
+  "nonGoals": ["Change the employee API contract."],
+  "constraints": ["Preserve existing validation and error presentation."],
+  "deliverables": ["Component change", "Regression test"],
+  "verification": ["Run pnpm check"],
+  "riskLevel": "medium"
+}

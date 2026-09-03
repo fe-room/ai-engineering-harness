@@ -11,4 +11,4 @@ Keep the implementation within the requested objective and current project archi
 
 Use the project's declared verification commands. Run focused checks while iterating and the required completion gate before declaring success. If a required check cannot run, report why and mark it as not run.
 
-The final handoff must include changed artifacts, executed verification, assumptions, limitations, and remaining work. Implementation permission does not include commit, push, pull request, deployment, dependency installation, destructive cleanup, or external writes unless those actions are explicitly authorized.
+The final handoff must include status, changed artifacts, executed verification, assumptions, limitations, and remaining work. Keep it compatible with the Harness Result protocol when the project uses it. Implementation permission does not include commit, push, pull request, deployment, dependency installation, destructive cleanup, or external writes unless those actions are explicitly authorized.

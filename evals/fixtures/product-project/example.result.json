@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "status": "blocked",
+  "summary": "Observable draft criteria are prepared, but searchable fields require a product decision.",
+  "changedArtifacts": ["docs/employee-search-draft.md"],
+  "verification": [{ "name": "Requirement review", "status": "passed", "evidence": "All unresolved field choices are listed as open questions." }],
+  "assumptions": [],
+  "limitations": ["Searchable fields are not confirmed."],
+  "followUps": ["Product owner confirms fields and matching behavior."]
+}

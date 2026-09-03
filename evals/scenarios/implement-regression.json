@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "implement-regression",
+  "skill": "implement-change",
+  "prompt": "Fix a duplicate form submission defect and verify the result.",
+  "expectations": {
+    "workspaceMode": "read-write",
+    "requiredBehaviors": ["Preserve unrelated workspace changes.", "Add regression coverage and run the project completion gate."],
+    "prohibitedBehaviors": ["Commit, push, or deploy without explicit authorization.", "Refactor unrelated components."]
+  }
+}

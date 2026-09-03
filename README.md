@@ -20,9 +20,12 @@ node --test
 - 任务输入与交付结果 JSON Schema。
 - `plan-change`、`diagnose-problem`、`implement-change`、`review-change`、`verify-deliverable` 五个通用 Skill。
 - `doctor`、`init`、`sync`、`verify`、`eval` CLI 命令。
+- Task/Result 模板创建和运行时协议校验。
 - Codex、Claude Code 与 GitHub Copilot 的 Skill 目录适配。
-- 基于行为场景而非固定文案的轻量 Eval 基础。
+- 前端、后端、产品工作三类 fixture 和五个行为预期场景。
 
 ## 设计边界
 
 Harness 定义工作协议、生命周期、权限、证据和验证方式。具体项目继续拥有自己的产品事实、架构决策、构建命令、安全策略和发布流程。
+
+完整接入步骤见 [使用指南](./docs/usage.md)。

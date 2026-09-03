@@ -1,7 +1,10 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { basename, isAbsolute, normalize, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { readJsonFile, validateJsonDocument } from './schema.mjs'
 
 export const CONFIG_FILENAME = 'harness.project.json'
+const PROJECT_SCHEMA = readJsonFile(fileURLToPath(new URL('../schemas/project.schema.json', import.meta.url)))
 
 export function readProjectConfig(projectDirectory) {
   const path = resolve(projectDirectory, CONFIG_FILENAME)
@@ -21,11 +24,24 @@ export function readProjectConfig(projectDirectory) {
 }
 
 export function validateProjectConfig(config, source = CONFIG_FILENAME) {
+  const schemaErrors = validateJsonDocument(config, PROJECT_SCHEMA)
+  if (schemaErrors.length > 0) throw new Error(`${source}: ${schemaErrors.join(' ')}`)
   if (config?.schemaVersion !== 1) {
     throw new Error(`${source}: schemaVersion must be 1.`)
   }
-  if (!config.project?.name || typeof config.project.name !== 'string') {
+  if (!config.project?.name || typeof config.project.name !== 'string' || !config.project.name.trim()) {
     throw new Error(`${source}: project.name must be a non-empty string.`)
+  }
+  if (
+    config.knowledge?.entrypoint !== null && !isSafeRelativeFile(config.knowledge?.entrypoint)
+  ) {
+    throw new Error(`${source}: knowledge.entrypoint must be a non-empty path or null.`)
+  }
+  if (
+    !Array.isArray(config.knowledge?.documents) ||
+    config.knowledge.documents.some((document) => !isSafeRelativeFile(document))
+  ) {
+    throw new Error(`${source}: knowledge.documents must contain safe project-relative file paths.`)
   }
   if (
     !Array.isArray(config.commands?.verify) ||
@@ -45,12 +61,23 @@ export function validateProjectConfig(config, source = CONFIG_FILENAME) {
   ) {
     throw new Error(`${source}: adapters.skillDirectories must contain safe project-relative directories.`)
   }
+  if (
+    !Array.isArray(config.policies?.approvalRequired) ||
+    config.policies.approvalRequired.some((action) => typeof action !== 'string' || !action.trim())
+  ) {
+    throw new Error(`${source}: policies.approvalRequired must be an array of non-empty action names.`)
+  }
 }
 
 function isSafeRelativeDirectory(directory) {
   if (typeof directory !== 'string' || !directory.trim() || isAbsolute(directory)) return false
   const parts = normalize(directory).split(/[\\/]/)
   return !parts.includes('..') && normalize(directory) !== '.'
+}
+
+function isSafeRelativeFile(path) {
+  if (typeof path !== 'string' || !path.trim() || isAbsolute(path)) return false
+  return !normalize(path).split(/[\\/]/).includes('..')
 }
 
 export function createProjectConfig(projectDirectory) {

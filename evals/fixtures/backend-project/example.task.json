@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "objective": "Return the existing conflict response when a department code is duplicated.",
+  "context": ["The repository reports a uniqueness conflict that is currently mapped to a system error."],
+  "acceptanceCriteria": ["The API maps the known uniqueness conflict to the documented conflict response.", "Unexpected repository failures remain system errors."],
+  "nonGoals": ["Change the database uniqueness constraint."],
+  "constraints": ["Do not expose database error text in the response."],
+  "deliverables": ["Error mapping", "Service test"],
+  "verification": ["Run ./gradlew check"],
+  "riskLevel": "high"
+}

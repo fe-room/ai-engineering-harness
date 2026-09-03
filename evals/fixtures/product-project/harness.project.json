@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "project": { "name": "product-fixture" },
+  "knowledge": { "entrypoint": "AGENTS.md", "documents": [] },
+  "commands": { "verify": ["node tooling/check-doc-links.mjs"] },
+  "skills": ["plan-change", "review-change", "verify-deliverable"],
+  "adapters": { "skillDirectories": [".agents/skills", ".claude/skills", ".github/skills"] },
+  "policies": { "approvalRequired": ["publish-document", "notify-stakeholders", "external-write"] }
+}

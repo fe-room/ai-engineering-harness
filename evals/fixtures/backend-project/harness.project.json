@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "project": { "name": "backend-fixture" },
+  "knowledge": { "entrypoint": "AGENTS.md", "documents": [] },
+  "commands": { "verify": ["./gradlew check"] },
+  "skills": ["plan-change", "diagnose-problem", "implement-change", "review-change", "verify-deliverable"],
+  "adapters": { "skillDirectories": [".agents/skills", ".claude/skills"] },
+  "policies": { "approvalRequired": ["install-dependencies", "database-migration", "commit", "push", "deploy", "external-write"] }
+}

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "status": "partial",
+  "summary": "The mapping and tests are implemented, but the full integration suite is unavailable locally.",
+  "changedArtifacts": ["DepartmentService.java", "DepartmentServiceTest.java"],
+  "verification": [
+    { "name": "Service unit tests", "status": "passed", "evidence": "Focused Gradle test exited with status 0." },
+    { "name": "Integration suite", "status": "not-run", "evidence": "The required database container is unavailable." }
+  ],
+  "assumptions": [],
+  "limitations": ["Integration behavior is not locally verified."],
+  "followUps": ["Run the integration suite in CI."]
+}

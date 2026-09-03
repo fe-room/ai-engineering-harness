@@ -156,6 +156,8 @@ Understand → Inspect → Plan → Execute → Verify → Review → Deliver �
 - 建立任务模板、Review Packet 和 Eval rubric。
 - 补充 Windows 与 CI 兼容性。
 
+当前进度：Task/Result 运行时校验、Review Packet、前端/后端/产品 fixture、行为场景目录和增强环境诊断已经完成；HR 项目真实接入、Windows 验证和模型执行评分尚未完成。
+
 ### 0.3：角色和技术包
 
 - 从真实重复场景提取产品、开发、测试和 Reviewer 角色包。

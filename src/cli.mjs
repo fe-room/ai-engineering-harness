@@ -1,8 +1,10 @@
 import { fileURLToPath } from 'node:url'
 import { resolve } from 'node:path'
 import { createProjectConfig } from './config.mjs'
+import { createProtocolDocument, validateProtocolDocument } from './documents.mjs'
 import { inspectProject, printDoctorReport } from './doctor.mjs'
-import { validateSkill, validateSkillsDirectory } from './skills.mjs'
+import { evaluateHarness } from './eval.mjs'
+import { validateSkill } from './skills.mjs'
 import { syncSkills } from './sync.mjs'
 import { verifyProject } from './verify.mjs'
 
@@ -25,7 +27,7 @@ export async function runCli(args, output = console.log, errorOutput = console.e
         return 0
       }
       case 'doctor': {
-        const checks = inspectProject(projectDirectory)
+        const checks = inspectProject(projectDirectory, { harnessDirectory: HARNESS_DIRECTORY })
         printDoctorReport(checks, output)
         return checks.some((check) => check.level === 'error') ? 1 : 0
       }
@@ -41,12 +43,37 @@ export async function runCli(args, output = console.log, errorOutput = console.e
       case 'verify':
         return verifyProject(projectDirectory, output)
       case 'validate-skill': {
-        const skillDirectory = rest.find((value) => !value.startsWith('--'))
+        const [skillDirectory] = positionalArguments(rest)
         if (!skillDirectory) throw new Error('Usage: harness validate-skill <skill-directory>')
         return printSkillResults([validateSkill(resolve(skillDirectory))], output)
       }
+      case 'validate-task':
+      case 'validate-result': {
+        const kind = command === 'validate-task' ? 'task' : 'result'
+        const [documentPath] = positionalArguments(rest)
+        if (!documentPath) throw new Error(`Usage: harness ${command} <file>`)
+        const errors = validateProtocolDocument({
+          harnessDirectory: HARNESS_DIRECTORY,
+          documentPath: resolve(projectDirectory, documentPath),
+          kind,
+        })
+        return printValidationResult(`${kind}:${documentPath}`, errors, output)
+      }
+      case 'create-task':
+      case 'create-result': {
+        const kind = command === 'create-task' ? 'task' : 'result'
+        const [destination] = positionalArguments(rest)
+        if (!destination) throw new Error(`Usage: harness ${command} <file>`)
+        const path = createProtocolDocument({
+          harnessDirectory: HARNESS_DIRECTORY,
+          destination: resolve(projectDirectory, destination),
+          kind,
+        })
+        output(`Created ${path}. Replace the template guidance, then run \`harness validate-${kind} ${path}\`.`)
+        return 0
+      }
       case 'eval':
-        return printSkillResults(validateSkillsDirectory(resolve(HARNESS_DIRECTORY, 'skills')), output)
+        return printEvaluationResults(evaluateHarness(HARNESS_DIRECTORY), output)
       default:
         errorOutput(`Unknown command: ${command}`)
         errorOutput(helpText())
@@ -56,6 +83,27 @@ export async function runCli(args, output = console.log, errorOutput = console.e
     errorOutput(`[FAIL] ${error.message}`)
     return 1
   }
+}
+
+function printValidationResult(subject, errors, output) {
+  if (errors.length === 0) {
+    output(`[PASS] ${subject}`)
+    return 0
+  }
+  for (const error of errors) output(`[FAIL] ${subject}: ${error}`)
+  return 1
+}
+
+function printEvaluationResults(results, output) {
+  let failed = false
+  for (const result of results) {
+    if (result.errors.length === 0) output(`[PASS] ${result.subject}`)
+    else {
+      failed = true
+      for (const error of result.errors) output(`[FAIL] ${result.subject}: ${error}`)
+    }
+  }
+  return failed ? 1 : 0
 }
 
 function printSkillResults(results, output) {
@@ -78,6 +126,18 @@ function readOption(args, name) {
   return args[index + 1]
 }
 
+function positionalArguments(args) {
+  const values = []
+  for (let index = 0; index < args.length; index += 1) {
+    if (args[index] === '--project') {
+      index += 1
+      continue
+    }
+    if (!args[index].startsWith('--')) values.push(args[index])
+  }
+  return values
+}
+
 function helpText() {
   return `AI Engineering Harness
 
@@ -87,5 +147,9 @@ Usage:
   harness sync [--project <directory>] [--force]
   harness verify [--project <directory>]
   harness eval
-  harness validate-skill <skill-directory>`
+  harness validate-skill <skill-directory>
+  harness create-task <file>
+  harness validate-task <file>
+  harness create-result <file>
+  harness validate-result <file>`
 }

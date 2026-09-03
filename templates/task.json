@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "objective": "Describe the observable outcome this task must achieve.",
+  "context": [],
+  "acceptanceCriteria": [
+    "Replace this item with a verifiable acceptance criterion."
+  ],
+  "nonGoals": [],
+  "constraints": [],
+  "deliverables": [],
+  "verification": [],
+  "riskLevel": "medium"
+}

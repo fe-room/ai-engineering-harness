@@ -10,9 +10,11 @@ function createFixture(verifyCommands) {
   const config = {
     schemaVersion: 1,
     project: { name: 'verify-fixture' },
+    knowledge: { entrypoint: null, documents: [] },
     commands: { verify: verifyCommands },
     skills: [],
     adapters: { skillDirectories: [] },
+    policies: { approvalRequired: [] },
   }
   writeFileSync(resolve(directory, 'harness.project.json'), `${JSON.stringify(config)}\n`)
   return directory

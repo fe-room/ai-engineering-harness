@@ -22,11 +22,7 @@
     "verify-deliverable"
   ],
   "adapters": {
-    "skillDirectories": [
-      ".agents/skills",
-      ".claude/skills",
-      ".github/skills"
-    ]
+    "skillDirectories": []
   },
   "policies": {
     "approvalRequired": [

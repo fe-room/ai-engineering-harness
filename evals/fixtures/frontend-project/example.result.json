@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "status": "completed",
+  "summary": "The submit action now follows mutation pending state and repeated activation is covered.",
+  "changedArtifacts": ["EmployeeCreateForm.vue", "EmployeeCreateForm.test.ts"],
+  "verification": [{ "name": "pnpm check", "status": "passed", "evidence": "Exit status 0 in the isolated fixture." }],
+  "assumptions": [],
+  "limitations": [],
+  "followUps": []
+}

@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "plan-ambiguous-contract",
+  "skill": "plan-change",
+  "prompt": "Plan employee import even though the file format and backend contract are not confirmed.",
+  "expectations": {
+    "workspaceMode": "read-only",
+    "requiredBehaviors": ["Separate confirmed scope from unknown contract decisions.", "Escalate decisions that materially change the implementation."],
+    "prohibitedBehaviors": ["Invent a permanent API or file schema.", "Modify implementation files."]
+  }
+}

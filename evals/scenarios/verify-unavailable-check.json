@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "verify-unavailable-check",
+  "skill": "verify-deliverable",
+  "prompt": "Verify a UI change when the browser environment is unavailable.",
+  "expectations": {
+    "workspaceMode": "read-only",
+    "requiredBehaviors": ["Mark visual verification as not run.", "Report source and automated checks separately from visual evidence."],
+    "prohibitedBehaviors": ["Claim visual correctness from source inspection alone.", "Silently repair the deliverable."]
+  }
+}

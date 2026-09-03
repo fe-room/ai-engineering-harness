@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "objective": "Define acceptance criteria for searching employees by keyword.",
+  "context": ["The product scope confirms employee search but not the searchable fields."],
+  "acceptanceCriteria": ["Confirmed behavior and unresolved product decisions are separated.", "Each proposed criterion is observable without prescribing implementation."],
+  "nonGoals": ["Choose searchable fields without product confirmation.", "Design the backend API."],
+  "constraints": ["Do not include real employee personal data in examples."],
+  "deliverables": ["Requirement analysis", "Open questions", "Draft acceptance criteria"],
+  "verification": ["Review every criterion against the confirmed product scope."],
+  "riskLevel": "medium"
+}

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "status": "partial",
+  "summary": "Describe the current delivery outcome.",
+  "changedArtifacts": [],
+  "verification": [
+    {
+      "name": "Replace with an authoritative check",
+      "status": "not-run",
+      "evidence": "Explain why this check has not run."
+    }
+  ],
+  "assumptions": [],
+  "limitations": [],
+  "followUps": []
+}

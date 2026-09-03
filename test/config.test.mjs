@@ -7,6 +7,8 @@ import { fileURLToPath } from 'node:url'
 import { createProjectConfig, readProjectConfig, validateProjectConfig } from '../src/config.mjs'
 import { inspectProject } from '../src/doctor.mjs'
 
+const harnessDirectory = fileURLToPath(new URL('../', import.meta.url))
+
 test('init creates a reviewable project config and infers pnpm check', () => {
   const directory = mkdtempSync(resolve(tmpdir(), 'harness-config-'))
   try {
@@ -54,10 +56,31 @@ test('doctor reports conflicting package-manager lockfiles', () => {
   }
 })
 
+test('doctor reports missing knowledge and unsynchronized skills', () => {
+  const directory = mkdtempSync(resolve(tmpdir(), 'harness-doctor-'))
+  try {
+    const config = {
+      schemaVersion: 1,
+      project: { name: 'doctor-fixture' },
+      knowledge: { entrypoint: 'AGENTS.md', documents: ['docs/missing.md'] },
+      commands: { verify: ['npm test'] },
+      skills: ['plan-change'],
+      adapters: { skillDirectories: ['.agents/skills'] },
+      policies: { approvalRequired: [] },
+    }
+    writeFileSync(resolve(directory, 'harness.project.json'), JSON.stringify(config))
+    const checks = inspectProject(directory, { harnessDirectory })
+    assert.ok(checks.some((check) => check.level === 'error' && check.message.includes('AGENTS.md')))
+    assert.ok(checks.some((check) => check.level === 'error' && check.message.includes('docs/missing.md')))
+    assert.ok(checks.some((check) => check.level === 'warning' && check.message.includes('harness sync')))
+  } finally {
+    rmSync(directory, { recursive: true, force: true })
+  }
+})
+
 test('schemas contain valid JSON and stable version identifiers', () => {
-  const root = fileURLToPath(new URL('../', import.meta.url))
   for (const filename of ['task.schema.json', 'result.schema.json']) {
-    const schema = JSON.parse(readFileSync(resolve(root, 'schemas', filename), 'utf8'))
+    const schema = JSON.parse(readFileSync(resolve(harnessDirectory, 'schemas', filename), 'utf8'))
     assert.equal(schema.$schema, 'https://json-schema.org/draft/2020-12/schema')
     assert.match(schema.$id, /\/v1$/)
   }
@@ -69,10 +92,28 @@ test('project config rejects skill output paths outside the project', () => {
       validateProjectConfig({
         schemaVersion: 1,
         project: { name: 'unsafe' },
+        knowledge: { entrypoint: null, documents: [] },
         commands: { verify: [] },
         skills: ['plan-change'],
         adapters: { skillDirectories: ['../outside'] },
+        policies: { approvalRequired: [] },
       }),
     /safe project-relative directories/,
+  )
+})
+
+test('project config rejects knowledge paths outside the project', () => {
+  assert.throws(
+    () =>
+      validateProjectConfig({
+        schemaVersion: 1,
+        project: { name: 'unsafe' },
+        knowledge: { entrypoint: '../../AGENTS.md', documents: [] },
+        commands: { verify: [] },
+        skills: [],
+        adapters: { skillDirectories: [] },
+        policies: { approvalRequired: [] },
+      }),
+    /knowledge.entrypoint/,
   )
 })

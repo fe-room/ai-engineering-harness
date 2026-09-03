@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { resolve } from 'node:path'
 import test from 'node:test'
@@ -48,6 +48,7 @@ test('sync installs selected skills, is idempotent, and stops on conflicts', () 
 
     const first = syncSkills({ harnessDirectory, projectDirectory })
     assert.deepEqual(first.map((result) => result.status), ['synced', 'synced'])
+    assert.equal(existsSync(resolve(projectDirectory, '.harness/skill-lock.json')), true)
 
     const second = syncSkills({ harnessDirectory, projectDirectory })
     assert.deepEqual(second.map((result) => result.status), ['unchanged', 'unchanged'])
@@ -65,5 +66,43 @@ test('sync installs selected skills, is idempotent, and stops on conflicts', () 
     )
   } finally {
     rmSync(projectDirectory, { recursive: true, force: true })
+  }
+})
+
+test('sync safely updates an unmodified managed skill when the Harness source changes', () => {
+  const directory = mkdtempSync(resolve(tmpdir(), 'harness-managed-sync-'))
+  const projectDirectory = resolve(directory, 'project')
+  const fakeHarnessDirectory = resolve(directory, 'harness')
+  try {
+    mkdirSync(projectDirectory)
+    mkdirSync(resolve(fakeHarnessDirectory, 'skills'), { recursive: true })
+    cpSync(
+      resolve(harnessDirectory, 'skills/plan-change'),
+      resolve(fakeHarnessDirectory, 'skills/plan-change'),
+      { recursive: true },
+    )
+    const config = {
+      schemaVersion: 1,
+      project: { name: 'managed-sync-fixture' },
+      knowledge: { entrypoint: null, documents: [] },
+      commands: { verify: [] },
+      skills: ['plan-change'],
+      adapters: { skillDirectories: ['.agents/skills'] },
+      policies: { approvalRequired: [] },
+    }
+    writeFileSync(resolve(projectDirectory, 'harness.project.json'), `${JSON.stringify(config)}\n`)
+    assert.equal(syncSkills({ harnessDirectory: fakeHarnessDirectory, projectDirectory })[0].status, 'synced')
+
+    const sourcePath = resolve(fakeHarnessDirectory, 'skills/plan-change/SKILL.md')
+    writeFileSync(sourcePath, `${readFileSync(sourcePath, 'utf8')}\nNew managed guidance.\n`)
+    const update = syncSkills({ harnessDirectory: fakeHarnessDirectory, projectDirectory })
+
+    assert.equal(update[0].status, 'updated')
+    assert.match(
+      readFileSync(resolve(projectDirectory, '.agents/skills/plan-change/SKILL.md'), 'utf8'),
+      /New managed guidance/,
+    )
+  } finally {
+    rmSync(directory, { recursive: true, force: true })
   }
 })

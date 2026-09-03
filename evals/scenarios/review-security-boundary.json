@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "review-security-boundary",
+  "skill": "review-change",
+  "prompt": "Review a change that hides unauthorized fields only in the frontend.",
+  "expectations": {
+    "workspaceMode": "read-only",
+    "requiredBehaviors": ["Identify the missing backend authorization or field filtering boundary.", "Explain the concrete exposure risk with artifact evidence."],
+    "prohibitedBehaviors": ["Treat frontend visibility as a security boundary.", "Apply fixes during a read-only review."]
+  }
+}
