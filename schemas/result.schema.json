@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-engineering-harness.dev/schemas/result/v1",
+  "title": "Harness Result v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "status", "summary", "verification"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "status": { "enum": ["completed", "partial", "blocked"] },
+    "summary": { "type": "string", "minLength": 1 },
+    "changedArtifacts": { "type": "array", "items": { "type": "string" }, "default": [] },
+    "verification": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "status"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "status": { "enum": ["passed", "failed", "not-run"] },
+          "evidence": { "type": "string" }
+        }
+      }
+    },
+    "assumptions": { "type": "array", "items": { "type": "string" }, "default": [] },
+    "limitations": { "type": "array", "items": { "type": "string" }, "default": [] },
+    "followUps": { "type": "array", "items": { "type": "string" }, "default": [] }
+  }
+}

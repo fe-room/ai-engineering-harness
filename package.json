@@ -1,0 +1,17 @@
+{
+  "name": "ai-engineering-harness",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "bin": {
+    "harness": "./bin/harness.mjs"
+  },
+  "scripts": {
+    "harness": "node ./bin/harness.mjs",
+    "test": "node --test",
+    "check": "node ./bin/harness.mjs eval && node --test"
+  }
+}

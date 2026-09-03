@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "name": "ai-engineering-harness"
+  },
+  "knowledge": {
+    "entrypoint": "AGENTS.md",
+    "documents": [
+      "docs/plan.md"
+    ]
+  },
+  "commands": {
+    "verify": [
+      "npm run check"
+    ]
+  },
+  "skills": [
+    "plan-change",
+    "diagnose-problem",
+    "implement-change",
+    "review-change",
+    "verify-deliverable"
+  ],
+  "adapters": {
+    "skillDirectories": [
+      ".agents/skills",
+      ".claude/skills",
+      ".github/skills"
+    ]
+  },
+  "policies": {
+    "approvalRequired": [
+      "install-dependencies",
+      "commit",
+      "push",
+      "deploy",
+      "external-write"
+    ]
+  }
+}
